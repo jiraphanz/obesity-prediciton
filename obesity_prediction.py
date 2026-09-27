@@ -296,6 +296,7 @@ with st.form("prediction_form"):
             "ประวัติคนในครอบครัวมีภาวะน้ำหนักเกินหรือโรคอ้วน",
             ["ใช่", "ไม่ใช่"],
             format_func=lambda x: YES_NO_LABELS[x],
+            help="ใช่ = มีประวัติคนในครอบครัวมีภาวะน้ำหนักเกิน, ไม่ใช่ = ไม่มีประวัติดังกล่าว",
         )
 
     col1, col2 = st.columns(2)
@@ -305,7 +306,7 @@ with st.form("prediction_form"):
             "ส่วนสูง (เมตร)",
             min_value=1.0,
             max_value=2.5,
-            value=1.70,
+            value=0.00,
             step=0.01,
             format="%.2f",
         )
@@ -315,7 +316,7 @@ with st.form("prediction_form"):
             "น้ำหนัก (กิโลกรัม)",
             min_value=20.0,
             max_value=250.0,
-            value=70.0,
+            value=0.0,
             step=0.1,
             format="%.1f",
         )
