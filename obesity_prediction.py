@@ -281,7 +281,7 @@ with st.form("prediction_form"):
             "อายุ",
             min_value=14,
             max_value=100,
-            value=0,
+            value=14,
             step=1,
         )
 
@@ -306,7 +306,7 @@ with st.form("prediction_form"):
             "ส่วนสูง (เมตร)",
             min_value=1.0,
             max_value=2.5,
-            value=0.0,
+            value=1.0,
             step=0.01,
             format="%.2f",
         )
@@ -316,7 +316,7 @@ with st.form("prediction_form"):
             "น้ำหนัก (กิโลกรัม)",
             min_value=20.0,
             max_value=250.0,
-            value=0.0,
+            value=20.0,
             step=0.1,
             format="%.1f",
         )
