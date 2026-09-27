@@ -328,7 +328,7 @@ with st.form("prediction_form"):
     with col1:
         favc = st.selectbox(
             "การรับประทานอาหารแคลอรีสูงเป็นประจำ (FAVC)",
-            ["ใช่", "ไม่ใช่"],
+            ["yes", "no"],
             format_func=lambda x: YES_NO_LABELS[x]
         )
 
@@ -444,7 +444,7 @@ with st.form("prediction_form"):
 
 
     submitted = st.form_submit_button(
-        "🔍 ทำนายและแนะนำ",
+        "ทำนาย",
         use_container_width=True,
     )
 
@@ -544,7 +544,7 @@ if submitted:
         # -------------------------------------------------
 
         st.divider()
-        st.subheader("💪 คำแนะนำการออกกำลังกาย")
+        st.subheader("คำแนะนำการออกกำลังกาย")
 
         exercise_recommendation = get_exercise_recommendations(prediction)
 
