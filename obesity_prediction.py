@@ -67,8 +67,48 @@ except Exception as e:
 # Recommendation functions
 # =========================================================
 
+def normalize_obesity_level(obesity_level):
+    """Normalize model labels so recommendation rules use one canonical format."""
+    if obesity_level is None:
+        return ""
+
+    return str(obesity_level).strip().replace(" ", "_")
+
+
+# Display labels are translated for the user while the original values
+# are kept unchanged for the ML pipeline.
+YES_NO_LABELS = {
+    "yes": "ใช่",
+    "no": "ไม่ใช่",
+}
+
+CAEC_LABELS = {
+    "no": "ไม่กิน",
+    "Sometimes": "บางครั้ง",
+    "Frequently": "บ่อย",
+    "Always": "เป็นประจำ",
+}
+
+CALC_LABELS = {
+    "no": "ไม่ดื่ม",
+    "Sometimes": "บางครั้ง",
+    "Frequently": "บ่อย",
+    "Always": "เป็นประจำ",
+}
+
+MTRANS_LABELS = {
+    "Public_Transportation": "ขนส่งสาธารณะ",
+    "Automobile": "รถยนต์",
+    "Walking": "เดิน",
+    "Motorbike": "มอเตอร์ไซค์",
+    "Bike": "จักรยาน",
+}
+
+
 def get_exercise_recommendations(obesity_level):
     """Provides general exercise recommendations based on obesity level."""
+
+    obesity_level = normalize_obesity_level(obesity_level)
 
     if obesity_level == "Insufficient_Weight":
         return (
@@ -82,14 +122,14 @@ def get_exercise_recommendations(obesity_level):
             "combined with strength training 2-3 times per week, and a healthy diet."
         )
 
-    elif obesity_level == "Overweight_ระดับ_I":
+    elif obesity_level == "Overweight_Level_I":
         return (
             "Increase moderate-intensity cardio to 200-250 นาที per week, "
             "incorporate consistent strength training, and focus on portion control "
             "and balanced nutrition."
         )
 
-    elif obesity_level == "Overweight_ระดับ_II":
+    elif obesity_level == "Overweight_Level_II":
         return (
             "Aim for higher-intensity cardio (250-300 นาที per week), "
             "consistent strength training, and crucial dietary changes focused "
@@ -123,6 +163,7 @@ def get_exercise_recommendations(obesity_level):
 def get_program_recommendations(obesity_level, df_programs):
     """Return up to five exercise programs using the project's existing rules."""
 
+    obesity_level = normalize_obesity_level(obesity_level)
     filtered_programs = pd.DataFrame()
 
     if obesity_level == "Insufficient_Weight":
@@ -162,7 +203,7 @@ def get_program_recommendations(obesity_level, df_programs):
             & (df_programs["time_per_workout"] <= 120)
         ]
 
-    elif obesity_level in ["Overweight_ระดับ_I", "Overweight_ระดับ_II"]:
+    elif obesity_level in ["Overweight_Level_I", "Overweight_Level_II"]:
         filtered_programs = df_programs[
             df_programs["level"].apply(
                 lambda x: any(
@@ -261,7 +302,10 @@ with st.form("prediction_form"):
         family_history = st.selectbox(
             "ประวัติคนในครอบครัวมีภาวะน้ำหนักเกิน",
             ["yes", "no"],
+            format_func=lambda x: YES_NO_LABELS[x],
+            help="yes = มีประวัติคนในครอบครัวมีภาวะน้ำหนักเกิน, no = ไม่มีประวัติดังกล่าว",
         )
+        st.caption("ใช่ = มีประวัติ  •  ไม่ใช่ = ไม่มีประวัติ")
 
     col1, col2 = st.columns(2)
 
@@ -293,7 +337,10 @@ with st.form("prediction_form"):
         favc = st.selectbox(
             "การรับประทานอาหารแคลอรีสูงเป็นประจำ (FAVC)",
             ["yes", "no"],
+            format_func=lambda x: YES_NO_LABELS[x],
+            help="yes = รับประทานอาหารแคลอรีสูงเป็นประจำ, no = ไม่รับประทานเป็นประจำ",
         )
+        st.caption("ใช่ = กินอาหารแคลอรีสูงเป็นประจำ  •  ไม่ใช่ = ไม่เป็นประจำ")
 
     with col2:
         fcvc = st.number_input(
@@ -302,7 +349,9 @@ with st.form("prediction_form"):
             max_value=3.0,
             value=2.0,
             step=0.1,
+            help="ค่าประมาณจากความถี่ในการรับประทานผัก: 1 = แทบไม่รับประทาน, 2 = รับประทานบางครั้ง, 3 = รับประทานเป็นประจำ/เกือบทุกมื้อ",
         )
+        st.caption("1 = แทบไม่กิน  •  2 = บางครั้ง  •  3 = เป็นประจำ/เกือบทุกมื้อ")
 
     with col3:
         ncp = st.number_input(
@@ -311,7 +360,9 @@ with st.form("prediction_form"):
             max_value=4.0,
             value=3.0,
             step=0.1,
+            help="จำนวนมื้ออาหารหลักต่อวัน: 1 = 1 มื้อ, 2 = 2 มื้อ, 3 = 3 มื้อ, 4 = มากกว่า 3 มื้อ",
         )
+        st.caption("1 = 1 มื้อ  •  2 = 2 มื้อ  •  3 = 3 มื้อ  •  4 = มากกว่า 3 มื้อ")
 
     col1, col2 = st.columns(2)
 
@@ -319,13 +370,19 @@ with st.form("prediction_form"):
         caec = st.selectbox(
             "การรับประทานอาหารระหว่างมื้อ (CAEC)",
             ["no", "Sometimes", "Frequently", "Always"],
+            format_func=lambda x: CAEC_LABELS[x],
+            help="ความถี่ในการรับประทานอาหารระหว่างมื้อ",
         )
+        st.caption("ไม่กิน  •  บางครั้ง  •  บ่อย  •  เป็นประจำ")
 
     with col2:
         calc = st.selectbox(
             "การดื่มแอลกอฮอล์ (CALC)",
             ["no", "Sometimes", "Frequently", "Always"],
+            format_func=lambda x: CALC_LABELS[x],
+            help="ความถี่ในการดื่มเครื่องดื่มแอลกอฮอล์",
         )
+        st.caption("ไม่ดื่ม  •  บางครั้ง  •  บ่อย  •  เป็นประจำ")
 
     st.subheader("🏃 ไลฟ์สไตล์และกิจกรรม")
 
@@ -333,12 +390,14 @@ with st.form("prediction_form"):
 
     with col1:
         ch2o = st.number_input(
-            "ปริมาณการดื่มน้ำ (CH2O)",
+            "ปริมาณการดื่มน้ำต่อวัน (CH2O)",
             min_value=1.0,
             max_value=3.0,
             value=2.0,
             step=0.1,
+            help="ปริมาณน้ำที่ดื่มต่อวัน: 1 = น้อยกว่า 1 ลิตร, 2 = ประมาณ 1–2 ลิตร, 3 = มากกว่า 2 ลิตร",
         )
+        st.caption("1 = < 1 ลิตร  •  2 = 1–2 ลิตร  •  3 = > 2 ลิตร")
 
     with col2:
         faf = st.number_input(
@@ -347,16 +406,20 @@ with st.form("prediction_form"):
             max_value=3.0,
             value=1.0,
             step=0.1,
+            help="จำนวนวันที่ทำกิจกรรมทางกายต่อสัปดาห์: 0 = ไม่ทำ, 1 = 1–2 วัน, 2 = 2–4 วัน, 3 = 4–5 วัน",
         )
+        st.caption("0 = ไม่ทำ  •  1 = 1–2 วัน/สัปดาห์  •  2 = 2–4 วัน  •  3 = 4–5 วัน")
 
     with col3:
         tue = st.number_input(
-            "ระยะเวลาใช้อุปกรณ์เทคโนโลยี (TUE)",
+            "ระยะเวลาใช้อุปกรณ์เทคโนโลยีต่อวัน (TUE)",
             min_value=0.0,
             max_value=2.0,
             value=1.0,
             step=0.1,
+            help="เวลาที่ใช้โทรศัพท์ คอมพิวเตอร์ หรืออุปกรณ์เทคโนโลยีต่อวัน: 0 = 0–2 ชม., 1 = 3–5 ชม., 2 = มากกว่า 5 ชม.",
         )
+        st.caption("0 = 0–2 ชม.  •  1 = 3–5 ชม.  •  2 = > 5 ชม./วัน")
 
     col1, col2, col3 = st.columns(3)
 
@@ -364,13 +427,19 @@ with st.form("prediction_form"):
         smoke = st.selectbox(
             "การสูบบุหรี่ (SMOKE)",
             ["no", "yes"],
+            format_func=lambda x: YES_NO_LABELS[x],
+            help="yes = สูบบุหรี่, no = ไม่สูบบุหรี่",
         )
+        st.caption("ไม่ใช่ = ไม่สูบ  •  ใช่ = สูบ")
 
     with col2:
         scc = st.selectbox(
             "การติดตามปริมาณแคลอรีที่รับประทาน (SCC)",
             ["no", "yes"],
+            format_func=lambda x: YES_NO_LABELS[x],
+            help="yes = มีการติดตาม/ควบคุมปริมาณแคลอรีที่รับประทาน, no = ไม่มีการติดตาม",
         )
+        st.caption("ไม่ใช่ = ไม่ติดตาม  •  ใช่ = ติดตาม")
 
     with col3:
         mtrans = st.selectbox(
@@ -382,7 +451,10 @@ with st.form("prediction_form"):
                 "Motorbike",
                 "Bike",
             ],
+            format_func=lambda x: MTRANS_LABELS[x],
+            help="เลือกรูปแบบการเดินทางที่ใช้เป็นหลัก",
         )
+        st.caption("ขนส่งสาธารณะ  •  รถยนต์  •  เดิน  •  มอเตอร์ไซค์  •  จักรยาน")
 
     submitted = st.form_submit_button(
         "🔍 ทำนายและแนะนำ",
@@ -420,7 +492,8 @@ if submitted:
     )
 
     try:
-        prediction = obesity_pipeline.predict(input_data)[0]
+        raw_prediction = obesity_pipeline.predict(input_data)[0]
+        prediction = normalize_obesity_level(raw_prediction)
         probabilities = obesity_pipeline.predict_proba(input_data)[0]
 
         classes = obesity_pipeline.classes_
