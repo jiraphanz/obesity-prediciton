@@ -539,6 +539,17 @@ if submitted:
                 use_container_width=True,
             )
 
+        # -------------------------------------------------
+        # คำแนะนำการออกกำลังกาย
+        # -------------------------------------------------
+
+        st.divider()
+        st.subheader("💪 คำแนะนำการออกกำลังกาย")
+
+        exercise_recommendation = get_exercise_recommendations(prediction)
+
+        st.info(exercise_recommendation)
+
     except Exception as e:
         st.error("เกิดข้อผิดพลาดระหว่างการทำนาย")
         st.exception(e)
