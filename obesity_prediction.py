@@ -294,7 +294,7 @@ with st.form("prediction_form"):
     with col3:
         family_history = st.selectbox(
             "ประวัติคนในครอบครัวมีภาวะน้ำหนักเกินหรือโรคอ้วน",
-            ["ใช่", "ไม่ใช่"],
+            ["yes", "no"],
             format_func=lambda x: YES_NO_LABELS[x],
             help="ใช่ = มีประวัติคนในครอบครัวมีภาวะน้ำหนักเกิน, ไม่ใช่ = ไม่มีประวัติดังกล่าว",
         )
@@ -306,7 +306,7 @@ with st.form("prediction_form"):
             "ส่วนสูง (เมตร)",
             min_value=1.0,
             max_value=2.5,
-            value=0.00,
+            value=1.65,
             step=0.01,
             format="%.2f",
         )
@@ -316,7 +316,7 @@ with st.form("prediction_form"):
             "น้ำหนัก (กิโลกรัม)",
             min_value=20.0,
             max_value=250.0,
-            value=0.0,
+            value=55.0,
             step=0.1,
             format="%.1f",
         )
