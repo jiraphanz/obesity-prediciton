@@ -1,5 +1,6 @@
-import ast
+import base64
 from pathlib import Path
+import streamlit as st
 
 import joblib
 import pandas as pd
@@ -14,6 +15,47 @@ st.set_page_config(
     page_title="Obesity Management System",
     layout="wide",
 )
+
+def set_background(image_path):
+    image_path = Path(image_path)
+
+    if not image_path.exists():
+        return
+
+    with open(image_path, "rb") as image_file:
+        encoded_image = base64.b64encode(image_file.read()).decode()
+
+    st.markdown(
+        f"""
+        <style>
+        .stApp {{
+            background:
+                linear-gradient(
+                    rgba(10, 12, 18, 0.82),
+                    rgba(10, 12, 18, 0.88)
+                ),
+                url("data:image/jpeg;base64,{encoded_image}");
+
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+            background-size: cover;
+        }}
+
+        .stApp::before {{
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+set_background("assets/background.jpg")
 
 
 # =========================================================
@@ -103,61 +145,54 @@ MTRANS_LABELS = {
     "Bike": "จักรยาน",
 }
 
-
 def get_exercise_recommendations(obesity_level):
-    """Provides general exercise recommendations based on obesity level."""
+    """คำแนะนำการออกกำลังกายตามระดับที่ระบบทำนาย"""
 
     obesity_level = normalize_obesity_level(obesity_level)
 
     if obesity_level == "Insufficient_Weight":
         return (
-            "Focus on strength training to build muscle mass, light cardio, "
-            "and ensure a balanced, calorie-sufficient diet for healthy weight gain."
+            "เน้นการฝึกเวทเทรนนิ่งเพื่อสร้างกล้ามเนื้อ "
+            "ร่วมกับคาร์ดิโอเบา ๆ และรับประทานอาหารให้เพียงพอต่อการเพิ่มน้ำหนักอย่างเหมาะสม"
         )
 
     elif obesity_level == "Normal_Weight":
         return (
-            "Maintain a balanced routine: 150 นาที of moderate cardio per week, "
-            "combined with strength training 2-3 times per week, and a healthy diet."
+            "ออกกำลังกายอย่างสมดุล โดยทำคาร์ดิโอระดับปานกลางประมาณ 150 นาทีต่อสัปดาห์ "
+            "ร่วมกับเวทเทรนนิ่ง 2–3 ครั้งต่อสัปดาห์ และรับประทานอาหารที่มีประโยชน์"
         )
 
     elif obesity_level == "Overweight_Level_I":
         return (
-            "Increase moderate-intensity cardio to 200-250 นาที per week, "
-            "incorporate consistent strength training, and focus on portion control "
-            "and balanced nutrition."
+            "เพิ่มคาร์ดิโอระดับปานกลางประมาณ 200–250 นาทีต่อสัปดาห์ "
+            "ร่วมกับเวทเทรนนิ่งอย่างสม่ำเสมอ และควบคุมปริมาณอาหารให้เหมาะสม"
         )
 
     elif obesity_level == "Overweight_Level_II":
         return (
-            "Aim for higher-intensity cardio (250-300 นาที per week), "
-            "consistent strength training, and crucial dietary changes focused "
-            "on calorie reduction and nutrient-dense foods."
+            "เน้นคาร์ดิโอประมาณ 250–300 นาทีต่อสัปดาห์ "
+            "ร่วมกับเวทเทรนนิ่งอย่างสม่ำเสมอ และปรับการรับประทานอาหารโดยลดพลังงานส่วนเกิน"
         )
 
     elif obesity_level == "Obesity_Type_I":
         return (
-            "Begin with low-impact cardio, gradually increasing intensity and duration. "
-            "Focus on consistency, and seek professional guidance for both exercise "
-            "and dietary plans."
+            "เริ่มจากการออกกำลังกายแบบแรงกระแทกต่ำ เช่น เดินหรือปั่นจักรยานเบา ๆ "
+            "แล้วค่อย ๆ เพิ่มเวลาและความหนัก โดยเน้นความสม่ำเสมอ"
         )
 
     elif obesity_level == "Obesity_Type_II":
         return (
-            "Emphasize low-impact activities to protect joints, focus on improving "
-            "mobility, and strictly follow medical and professional exercise supervision. "
-            "Significant dietary modifications are required."
+            "เน้นการออกกำลังกายที่มีแรงกระแทกต่ำ เพื่อช่วยลดแรงกดต่อข้อต่อ "
+            "ร่วมกับการฝึกเคลื่อนไหวร่างกาย และควรได้รับคำแนะนำจากผู้เชี่ยวชาญ"
         )
 
     elif obesity_level == "Obesity_Type_III":
         return (
-            "Medical supervision is paramount. Start with very light daily movements, "
-            "prioritize mobility and flexibility, and adhere to a strict dietary plan "
-            "under professional care."
+            "ควรเริ่มจากการเคลื่อนไหวร่างกายเบา ๆ ในชีวิตประจำวัน "
+            "เน้นการเคลื่อนไหวและความยืดหยุ่น และควรออกกำลังกายภายใต้คำแนะนำของผู้เชี่ยวชาญ"
         )
 
-    return "Unknown obesity level. Please provide a valid 'NObeyesdad' category."
-
+    return "ไม่พบระดับภาวะอ้วนที่ตรงกับข้อมูล"
 
 def get_program_recommendations(obesity_level, df_programs):
     """Return up to five exercise programs using the project's existing rules."""
@@ -509,8 +544,8 @@ if submitted:
 
         if confidence < 0.60:
             st.warning(
-                "Prediction confidence is below 60%. "
-                "The result may be uncertain and should be interpreted cautiously."
+                "โมเดลมีความมั่นใจในการทำนายน้อยกว่า 60%"
+                "ผลลัพธ์อาจไม่แม่นยำ"
             )
         else:
             st.success("โมเดลมีความมั่นใจในการทำนายตั้งแต่ 60% ขึ้นไป")
