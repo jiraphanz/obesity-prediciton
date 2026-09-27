@@ -12,7 +12,6 @@ import streamlit as st
 
 st.set_page_config(
     page_title="Obesity Management System",
-    page_icon="🏃",
     layout="wide",
 )
 
@@ -264,22 +263,16 @@ def get_program_recommendations(obesity_level, df_programs):
 # UI
 # =========================================================
 
-st.title("🏃 ระบบประเมินภาวะอ้วนและแนะนำการออกกำลังกาย")
+st.title("Obesity Prediction System")
 st.write(
-    "Predict an obesity level from personal and lifestyle information, "
-    "then receive exercise guidance and recommended workout programs."
-)
-
-st.info(
-    "This is a machine-learning prototype for educational purposes. "
-    "The prediction is not a medical diagnosis."
+    "ระบบประเมินภาวะอ้วนและแนะนำการออกกำลังกาย"
 )
 
 st.divider()
 
 with st.form("prediction_form"):
 
-    st.subheader("👤 ข้อมูลส่วนบุคคล")
+    st.subheader("ข้อมูลส่วนบุคคล")
 
     col1, col2, col3 = st.columns(3)
 
@@ -300,12 +293,10 @@ with st.form("prediction_form"):
 
     with col3:
         family_history = st.selectbox(
-            "ประวัติคนในครอบครัวมีภาวะน้ำหนักเกิน",
-            ["yes", "no"],
+            "ประวัติคนในครอบครัวมีภาวะน้ำหนักเกินหรือโรคอ้วน",
+            ["ใช่", "ไม่ใช่"],
             format_func=lambda x: YES_NO_LABELS[x],
-            help="yes = มีประวัติคนในครอบครัวมีภาวะน้ำหนักเกิน, no = ไม่มีประวัติดังกล่าว",
         )
-        st.caption("ใช่ = มีประวัติ  •  ไม่ใช่ = ไม่มีประวัติ")
 
     col1, col2 = st.columns(2)
 
@@ -329,18 +320,18 @@ with st.form("prediction_form"):
             format="%.1f",
         )
 
-    st.subheader("🍽️ พฤติกรรมการรับประทานอาหาร")
+    st.subheader("พฤติกรรมการรับประทานอาหาร")
 
     col1, col2, col3 = st.columns(3)
 
     with col1:
         favc = st.selectbox(
             "การรับประทานอาหารแคลอรีสูงเป็นประจำ (FAVC)",
-            ["yes", "no"],
-            format_func=lambda x: YES_NO_LABELS[x],
-            help="yes = รับประทานอาหารแคลอรีสูงเป็นประจำ, no = ไม่รับประทานเป็นประจำ",
+            ["ใช่", "ไม่ใช่"],
+            format_func=lambda x: YES_NO_LABELS[x]
         )
-        st.caption("ใช่ = กินอาหารแคลอรีสูงเป็นประจำ  •  ไม่ใช่ = ไม่เป็นประจำ")
+
+        st.caption("วัดจากพฤติกรรมการรับประทานอาหารที่มีแคลอรีสูง เช่น อาหารทอด ของหวาน")
 
     with col2:
         fcvc = st.number_input(
@@ -351,7 +342,7 @@ with st.form("prediction_form"):
             step=0.1,
             help="ค่าประมาณจากความถี่ในการรับประทานผัก: 1 = แทบไม่รับประทาน, 2 = รับประทานบางครั้ง, 3 = รับประทานเป็นประจำ/เกือบทุกมื้อ",
         )
-        st.caption("1 = แทบไม่กิน  •  2 = บางครั้ง  •  3 = เป็นประจำ/เกือบทุกมื้อ")
+
 
     with col3:
         ncp = st.number_input(
@@ -362,7 +353,7 @@ with st.form("prediction_form"):
             step=0.1,
             help="จำนวนมื้ออาหารหลักต่อวัน: 1 = 1 มื้อ, 2 = 2 มื้อ, 3 = 3 มื้อ, 4 = มากกว่า 3 มื้อ",
         )
-        st.caption("1 = 1 มื้อ  •  2 = 2 มื้อ  •  3 = 3 มื้อ  •  4 = มากกว่า 3 มื้อ")
+
 
     col1, col2 = st.columns(2)
 
@@ -373,7 +364,6 @@ with st.form("prediction_form"):
             format_func=lambda x: CAEC_LABELS[x],
             help="ความถี่ในการรับประทานอาหารระหว่างมื้อ",
         )
-        st.caption("ไม่กิน  •  บางครั้ง  •  บ่อย  •  เป็นประจำ")
 
     with col2:
         calc = st.selectbox(
@@ -382,9 +372,8 @@ with st.form("prediction_form"):
             format_func=lambda x: CALC_LABELS[x],
             help="ความถี่ในการดื่มเครื่องดื่มแอลกอฮอล์",
         )
-        st.caption("ไม่ดื่ม  •  บางครั้ง  •  บ่อย  •  เป็นประจำ")
 
-    st.subheader("🏃 ไลฟ์สไตล์และกิจกรรม")
+    st.subheader("ไลฟ์สไตล์และกิจกรรม")
 
     col1, col2, col3 = st.columns(3)
 
@@ -397,7 +386,7 @@ with st.form("prediction_form"):
             step=0.1,
             help="ปริมาณน้ำที่ดื่มต่อวัน: 1 = น้อยกว่า 1 ลิตร, 2 = ประมาณ 1–2 ลิตร, 3 = มากกว่า 2 ลิตร",
         )
-        st.caption("1 = < 1 ลิตร  •  2 = 1–2 ลิตร  •  3 = > 2 ลิตร")
+
 
     with col2:
         faf = st.number_input(
@@ -408,7 +397,7 @@ with st.form("prediction_form"):
             step=0.1,
             help="จำนวนวันที่ทำกิจกรรมทางกายต่อสัปดาห์: 0 = ไม่ทำ, 1 = 1–2 วัน, 2 = 2–4 วัน, 3 = 4–5 วัน",
         )
-        st.caption("0 = ไม่ทำ  •  1 = 1–2 วัน/สัปดาห์  •  2 = 2–4 วัน  •  3 = 4–5 วัน")
+
 
     with col3:
         tue = st.number_input(
@@ -419,7 +408,6 @@ with st.form("prediction_form"):
             step=0.1,
             help="เวลาที่ใช้โทรศัพท์ คอมพิวเตอร์ หรืออุปกรณ์เทคโนโลยีต่อวัน: 0 = 0–2 ชม., 1 = 3–5 ชม., 2 = มากกว่า 5 ชม.",
         )
-        st.caption("0 = 0–2 ชม.  •  1 = 3–5 ชม.  •  2 = > 5 ชม./วัน")
 
     col1, col2, col3 = st.columns(3)
 
@@ -430,7 +418,6 @@ with st.form("prediction_form"):
             format_func=lambda x: YES_NO_LABELS[x],
             help="yes = สูบบุหรี่, no = ไม่สูบบุหรี่",
         )
-        st.caption("ไม่ใช่ = ไม่สูบ  •  ใช่ = สูบ")
 
     with col2:
         scc = st.selectbox(
@@ -439,7 +426,6 @@ with st.form("prediction_form"):
             format_func=lambda x: YES_NO_LABELS[x],
             help="yes = มีการติดตาม/ควบคุมปริมาณแคลอรีที่รับประทาน, no = ไม่มีการติดตาม",
         )
-        st.caption("ไม่ใช่ = ไม่ติดตาม  •  ใช่ = ติดตาม")
 
     with col3:
         mtrans = st.selectbox(
@@ -454,7 +440,7 @@ with st.form("prediction_form"):
             format_func=lambda x: MTRANS_LABELS[x],
             help="เลือกรูปแบบการเดินทางที่ใช้เป็นหลัก",
         )
-        st.caption("ขนส่งสาธารณะ  •  รถยนต์  •  เดิน  •  มอเตอร์ไซค์  •  จักรยาน")
+
 
     submitted = st.form_submit_button(
         "🔍 ทำนายและแนะนำ",
@@ -504,7 +490,7 @@ if submitted:
         # -------------------------------------------------
 
         st.divider()
-        st.subheader("🎯 ผลการทำนาย")
+        st.subheader("ผลการทำนาย")
 
         result_col1, result_col2 = st.columns(2)
 
@@ -552,76 +538,6 @@ if submitted:
                 use_container_width=True,
             )
 
-        # -------------------------------------------------
-        # General exercise recommendation
-        # -------------------------------------------------
-
-        st.subheader("💪 คำแนะนำการออกกำลังกาย")
-
-        recommendation = get_exercise_recommendations(prediction)
-
-        st.write(recommendation)
-
-        # -------------------------------------------------
-        # Program recommendations
-        # -------------------------------------------------
-
-        st.subheader("📋 โปรแกรมออกกำลังกายที่แนะนำ")
-
-        recommended_programs = get_program_recommendations(
-            prediction,
-            df_programs,
-        )
-
-        if recommended_programs.empty:
-            st.warning(
-                "No workout programs were found for this predicted category "
-                "using the current recommendation rules."
-            )
-        else:
-            for i, (_, row) in enumerate(
-                recommended_programs.iterrows(),
-                start=1,
-            ):
-                with st.expander(
-                    f"{i}. {row['title']}"
-                ):
-                    st.write(row["description"])
-
-                    info_col1, info_col2, info_col3 = st.columns(3)
-
-                    with info_col1:
-                        st.write(
-                            f"**ระดับ:** "
-                            f"{', '.join(row['level'])}"
-                        )
-
-                    with info_col2:
-                        st.write(
-                            f"**เป้าหมาย:** "
-                            f"{', '.join(row['goal'])}"
-                        )
-
-                    with info_col3:
-                        st.write(
-                            f"**อุปกรณ์:** {row['equipment']}"
-                        )
-
-                    st.write(
-                        f"**ระยะเวลาโปรแกรม:** "
-                        f"{row['program_length']:.0f} สัปดาห์"
-                    )
-
-                    st.write(
-                        f"**เวลาในการออกกำลังกายแต่ละครั้ง:** "
-                        f"{row['time_per_workout']:.0f} นาที"
-                    )
-
-                    st.write(
-                        f"**จำนวนท่าออกกำลังกาย:** "
-                        f"{row['total_exercises']}"
-                    )
-
     except Exception as e:
         st.error("เกิดข้อผิดพลาดระหว่างการทำนาย")
         st.exception(e)
@@ -632,12 +548,8 @@ if submitted:
 # =========================================================
 
 st.divider()
-
 st.caption(
-    "ระบบประเมินภาวะอ้วนและแนะนำการออกกำลังกาย — Random Forest + Exercise Recommendation"
-)
-st.caption(
-    "AI disclosure: ChatGPT was used to assist with code explanation, "
-    "UI design, and code review. The project team reviewed and adapted "
-    "the implementation for the submitted system."
+    "ระบบนี้เป็นเพียงเครื่องมือช่วยในการประเมินภาวะอ้วนและแนะนำการออกกำลังกาย "
+    "ไม่สามารถใช้แทนคำปรึกษาทางการแพทย์ได้ หากมีข้อสงสัยเกี่ยวกับสุขภาพ "
+    "ควรปรึกษาแพทย์หรือผู้เชี่ยวชาญด้านสุขภาพ"
 )
