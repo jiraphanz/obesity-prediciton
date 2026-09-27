@@ -281,7 +281,7 @@ with st.form("prediction_form"):
             "อายุ",
             min_value=14,
             max_value=100,
-            value=23,
+            value=0,
             step=1,
         )
 
@@ -306,7 +306,7 @@ with st.form("prediction_form"):
             "ส่วนสูง (เมตร)",
             min_value=1.0,
             max_value=2.5,
-            value=1.65,
+            value=0.0,
             step=0.01,
             format="%.2f",
         )
@@ -316,7 +316,7 @@ with st.form("prediction_form"):
             "น้ำหนัก (กิโลกรัม)",
             min_value=20.0,
             max_value=250.0,
-            value=55.0,
+            value=0.0,
             step=0.1,
             format="%.1f",
         )
@@ -339,7 +339,7 @@ with st.form("prediction_form"):
             "การรับประทานผัก (FCVC)",
             min_value=1.0,
             max_value=3.0,
-            value=2.0,
+            value=1.0,
             step=0.1,
             help="ค่าประมาณจากความถี่ในการรับประทานผัก: 1 = แทบไม่รับประทาน, 2 = รับประทานบางครั้ง, 3 = รับประทานเป็นประจำ/เกือบทุกมื้อ",
         )
@@ -350,7 +350,6 @@ with st.form("prediction_form"):
             "จำนวนมื้ออาหารหลักต่อวัน (NCP)",
             min_value=1.0,
             max_value=4.0,
-            value=3.0,
             step=0.1,
             help="จำนวนมื้ออาหารหลักต่อวัน: 1 = 1 มื้อ, 2 = 2 มื้อ, 3 = 3 มื้อ, 4 = มากกว่า 3 มื้อ",
         )
