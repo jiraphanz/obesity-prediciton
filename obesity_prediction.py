@@ -1,10 +1,10 @@
-import base64
 import streamlit as st
 import joblib
 import pandas as pd
 import os
 
 st.set_page_config(page_title="Obesity Management System", layout="wide")
+obesity_pipeline = joblib.load("obesity_pipeline.pkl")
 
 def yes_no(x):
     if x == "yes":
