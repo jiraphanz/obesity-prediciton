@@ -6,22 +6,6 @@ import os
 
 st.set_page_config(page_title="Obesity Management System", layout="wide")
 
-def set_background(image_path):
-    f = open(image_path, "rb")
-    encoded_image = base64.b64encode(f.read()).decode()
-    f.close()
-    
-    st.markdown(
-        f"""
-        
-        """,
-        unsafe_allow_html=True
-    )
-
-set_background("assets/background.jpg")
-
-obesity_pipeline = joblib.load(os.path.join(os.path.dirname(__file__), "obesity_pipeline.pkl"))
-
 def yes_no(x):
     if x == "yes":
         return "ใช่"
